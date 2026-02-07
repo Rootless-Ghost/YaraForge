@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    <h2>{% if rule %}Edit Rule: {{ rule.name }}{% else %}Rule Builder{% endif %}</h2>
+    <p>Create YARA rules using the guided builder or raw editor</p>
+</div>
+
+<div class="grid-2">
+    <!-- Left Column: Rule Metadata -->
+    <div>
+        <div class="card mb-4">
+            <div class="card-header">
+                <span class="card-title">Rule Metadata</span>
+            </div>
+            <div class="form-group">
+                <label>Rule Name *</label>
+                <input type="text" id="rule-name" class="form-input" placeholder="e.g. detect_mimikatz" value="{{ rule.name if rule else '' }}">
+            </div>
+            <div class="form-group">
+                <label>Description</label>
+                <input type="text" id="rule-description" class="form-input" placeholder="What does this rule detect?" value="{{ rule.description if rule else '' }}">
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Author</label>
+                    <input type="text" id="rule-author" class="form-input" placeholder="Your name" value="{{ rule.author if rule else 'YaraForge User' }}">
+                </div>
+                <div class="form-group">
+                    <label>Category</label>
+                    <select id="rule-category" class="form-select">
+                        {% set categories = ['uncategorized', 'ransomware', 'trojan', 'dropper', 'backdoor', 'rat', 'infostealer', 'cryptominer', 'webshell', 'exploit', 'rootkit', 'apt', 'phishing', 'packer', 'custom'] %}
+                        {% for cat in categories %}
+                        <option value="{{ cat }}" {% if rule and rule.category == cat %}selected{% endif %}>{{ cat|title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+            </div>
+            <div class="grid-2">
+                <div class="form-group">
+                    <label>Severity</label>
+                    <select id="rule-severity" class="form-select">
+                        {% for sev in ['info', 'low', 'medium', 'high', 'critical'] %}
+                        <option value="{{ sev }}" {% if rule and rule.severity == sev %}selected{% elif not rule and sev == 'medium' %}selected{% endif %}>{{ sev|title }}</option>
+                        {% endfor %}
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Tags (comma-separated)</label>
+                    <input type="text" id="rule-tags" class="form-input" placeholder="malware, windows, pe" value="{{ rule.tags|join(', ') if rule and rule.tags else '' }}">
+                </div>
+            </div>
+        </div>
+
+        <!-- MITRE ATT&CK Mapping -->
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">MITRE ATT&CK Mapping</span>
+            </div>
+            <div class="form-group">
+                <input type="text" id="mitre-search" class="form-input" placeholder="Search techniques..." onkeyup="filterMitre()">
+            </div>
+            <div class="multi-select-container">
+                {% for tech_id, info in mitre_techniques.items() %}
+                <label class="multi-select-item">
+                    <input type="checkbox" class="mitre-checkbox" value="{{ tech_id }}"
+                        {% if rule and tech_id in rule.mitre_techniques %}checked{% endif %}>
+                    <span class="tech-id">{{ tech_id }}</span>
+                    <span>{{ info.name }}</span>
+                </label>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+
+    <!-- Right Column: Rule Content -->
+    <div>
+        <div class="card">
+            <div class="tabs">
+                <button class="tab active" data-tab="tab-guided">Guided Builder</button>
+                <button class="tab" data-tab="tab-raw">Raw Editor</button>
+            </div>
+
+            <!-- Guided Builder Tab -->
+            <div id="tab-guided" class="tab-content active">
+                <div class="card-header">
+                    <span class="card-title">Detection Strings</span>
+                    <button class="btn btn-secondary btn-sm" onclick="addStringRow()">+ Add String</button>
+                </div>
+                <div id="strings-container">
+                    <!-- String rows added dynamically -->
+                </div>
+                <div class="form-group mt-4">
+                    <label>Condition</label>
+                    <select id="rule-condition" class="form-select">
+                        <option value="any of them">any of them</option>
+                        <option value="all of them">all of them</option>
+                        <option value="2 of them">2 of them</option>
+                        <option value="3 of them">3 of them</option>
+                    </select>
+                </div>
+                <button class="btn btn-primary mt-4" onclick="generateRule()">
+                    ✦ Generate Rule
+                </button>
+            </div>
+
+            <!-- Raw Editor Tab -->
+            <div id="tab-raw" class="tab-content">
+                <textarea id="raw-editor" class="code-editor" spellcheck="false" placeholder="rule example_rule
+{
+    meta:
+        description = &quot;Example YARA rule&quot;
+        author = &quot;YaraForge User&quot;
+
+    strings:
+        $s1 = &quot;malicious_string&quot;
+        $s2 = { 4D 5A 90 00 }
+
+    condition:
+        any of them
+}">{{ rule.rule_content if rule else '' }}</textarea>
+            </div>
+
+            <!-- Actions -->
+            <div class="flex justify-between items-center mt-4">
+                <div id="validation-status"></div>
+                <div class="btn-group">
+                    <button class="btn btn-secondary" onclick="validateRule()">Validate</button>
+                    <button class="btn btn-primary" onclick="saveRule({{ rule.id if rule else 'null' }})">
+                        {% if rule %}Update Rule{% else %}Save Rule{% endif %}
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

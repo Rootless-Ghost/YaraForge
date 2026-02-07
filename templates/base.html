@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>YaraForge{% if page == 'builder' %} — Rule Builder{% elif page == 'manager' %} — Rule Manager{% elif page == 'tester' %} — Scanner{% elif page == 'import_export' %} — Import/Export{% else %} — Dashboard{% endif %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+    <div class="app-layout">
+        <!-- Sidebar Navigation -->
+        <nav class="sidebar">
+            <div class="sidebar-header">
+                <div class="logo">
+                    <span class="logo-icon">⚒</span>
+                    <div>
+                        <h1>YaraForge</h1>
+                        <span class="version">v1.0</span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="nav-section">
+                <span class="nav-label">OVERVIEW</span>
+                <a href="/" class="nav-link {% if page == 'dashboard' %}active{% endif %}">
+                    <span class="nav-icon">◉</span> Dashboard
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <span class="nav-label">WORKSPACE</span>
+                <a href="/builder" class="nav-link {% if page == 'builder' %}active{% endif %}">
+                    <span class="nav-icon">✦</span> Rule Builder
+                </a>
+                <a href="/manager" class="nav-link {% if page == 'manager' %}active{% endif %}">
+                    <span class="nav-icon">▤</span> Rule Manager
+                </a>
+                <a href="/tester" class="nav-link {% if page == 'tester' %}active{% endif %}">
+                    <span class="nav-icon">⏣</span> Scanner
+                </a>
+            </div>
+
+            <div class="nav-section">
+                <span class="nav-label">TOOLS</span>
+                <a href="/import-export" class="nav-link {% if page == 'import_export' %}active{% endif %}">
+                    <span class="nav-icon">⇄</span> Import / Export
+                </a>
+            </div>
+
+            <div class="sidebar-footer">
+                <div class="status-indicator">
+                    <span class="status-dot {% if yara_available is not defined or yara_available %}online{% else %}offline{% endif %}"></span>
+                    YARA Engine {{ 'Online' if yara_available is not defined or yara_available else 'Offline' }}
+                </div>
+            </div>
+        </nav>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-wrapper">
+                {% block content %}{% endblock %}
+            </div>
+        </main>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div id="toast-container"></div>
+
+    <script src="{{ url_for('static', filename='js/app.js') }}"></script>
+    {% block scripts %}{% endblock %}
+</body>
+</html>

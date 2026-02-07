@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    <div class="flex justify-between items-center">
+        <div>
+            <h2>Rule Manager</h2>
+            <p>Organize, search, and manage your YARA detection rules</p>
+        </div>
+        <a href="/builder" class="btn btn-primary">+ New Rule</a>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card mb-4">
+    <div class="flex gap-4 items-center" style="flex-wrap:wrap;">
+        <input type="text" id="rule-search" class="form-input" placeholder="Search rules..." style="max-width:300px;" oninput="filterRules()">
+        <select id="filter-category" class="form-select" style="max-width:180px;" onchange="filterRules()">
+            <option value="">All Categories</option>
+            {% set seen_cats = [] %}
+            {% for rule in rules %}
+                {% if rule.category not in seen_cats %}
+                    {% if seen_cats.append(rule.category) %}{% endif %}
+                    <option value="{{ rule.category }}">{{ rule.category|title }}</option>
+                {% endif %}
+            {% endfor %}
+        </select>
+        <select id="filter-severity" class="form-select" style="max-width:160px;" onchange="filterRules()">
+            <option value="">All Severities</option>
+            <option value="critical">Critical</option>
+            <option value="high">High</option>
+            <option value="medium">Medium</option>
+            <option value="low">Low</option>
+            <option value="info">Info</option>
+        </select>
+        <span class="text-muted text-sm" style="margin-left:auto;">{{ rules|length }} rules total</span>
+    </div>
+</div>
+
+<!-- Rules Table -->
+{% if rules %}
+<div class="card">
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr>
+                    <th>Status</th>
+                    <th>Name</th>
+                    <th>Category</th>
+                    <th>Severity</th>
+                    <th>MITRE</th>
+                    <th>Version</th>
+                    <th>Modified</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for rule in rules %}
+                <tr id="rule-row-{{ rule.id }}" data-name="{{ rule.name }}" data-category="{{ rule.category }}" data-severity="{{ rule.severity }}">
+                    <td>
+                        <input type="checkbox" class="toggle" {% if rule.is_active %}checked{% endif %} onchange="toggleRuleActive({{ rule.id }})">
+                    </td>
+                    <td>
+                        <strong style="color: var(--text-primary);">{{ rule.name }}</strong>
+                        {% if rule.description %}
+                        <div class="text-sm text-muted" style="margin-top:2px;">{{ rule.description[:80] }}</div>
+                        {% endif %}
+                    </td>
+                    <td><span class="badge badge-muted">{{ rule.category }}</span></td>
+                    <td>
+                        {% set sev_colors = {'critical':'red','high':'amber','medium':'blue','low':'green','info':'muted'} %}
+                        <span class="badge badge-{{ sev_colors.get(rule.severity, 'muted') }}">{{ rule.severity }}</span>
+                    </td>
+                    <td>
+                        <div class="tag-list">
+                            {% for t in rule.mitre_techniques[:3] %}
+                            <span class="badge badge-blue" style="font-size:10px;">{{ t }}</span>
+                            {% endfor %}
+                            {% if rule.mitre_techniques|length > 3 %}
+                            <span class="text-muted text-sm">+{{ rule.mitre_techniques|length - 3 }}</span>
+                            {% endif %}
+                        </div>
+                    </td>
+                    <td class="text-mono text-sm">v{{ rule.version }}</td>
+                    <td class="text-sm">{{ rule.date_modified[:10] }}</td>
+                    <td>
+                        <div class="btn-group">
+                            <a href="/builder?edit={{ rule.id }}" class="btn btn-secondary btn-sm">Edit</a>
+                            <button class="btn btn-danger btn-sm" onclick="deleteRule({{ rule.id }}, '{{ rule.name }}')">Del</button>
+                        </div>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% else %}
+<div class="card">
+    <div class="empty-state">
+        <div class="empty-state-icon">✦</div>
+        <h3>No rules created yet</h3>
+        <p>Head to the Rule Builder to create your first YARA detection rule.</p>
+        <a href="/builder" class="btn btn-primary mt-4">Create First Rule</a>
+    </div>
+</div>
+{% endif %}
+{% endblock %}
