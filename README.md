@@ -214,3 +214,8 @@ MIT License — see [LICENSE](LICENSE) for details.
 ---
 
 **Built as a cybersecurity portfolio project demonstrating detection engineering, YARA rule development, and full-stack Python web application skills.**
+
+## Author **Rootless-Ghost**
+
+Junior Penetration Tester | Purple Team & SOC Focus
+
