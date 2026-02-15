@@ -8,6 +8,7 @@ import time
 import hashlib
 import tempfile
 import json
+import logging
 
 try:
     import yara
@@ -26,11 +27,17 @@ def validate_rule(rule_content):
         yara.compile(source=rule_content)
         return True, None
     except yara.SyntaxError as e:
-        return False, f"Syntax Error: {str(e)}"
+        # Log detailed syntax error server-side, but return a generic message to the client
+        logging.exception("YARA syntax error while validating rule")
+        return False, "Syntax Error in YARA rule"
     except yara.Error as e:
-        return False, f"YARA Error: {str(e)}"
+        # Log detailed YARA engine error server-side
+        logging.exception("YARA engine error while validating rule")
+        return False, "YARA engine error while validating rule"
     except Exception as e:
-        return False, f"Unexpected Error: {str(e)}"
+        # Catch-all for unexpected errors; log full details but do not expose them to the client
+        logging.exception("Unexpected error while validating YARA rule")
+        return False, "Unexpected error while validating YARA rule"
 
 
 def compile_rules_from_db(rules):
