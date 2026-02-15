@@ -214,7 +214,9 @@ MIT License — see [LICENSE](LICENSE) for details.
 ---
 
 
-## Author **Rootless-Ghost**
+<div align="center">
 
-Purple Team & SOC Focus
+Built by [Rootless-Ghost](https://github.com/Rootless-Ghost) 
+
+</div>
 
