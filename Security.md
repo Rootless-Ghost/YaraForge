@@ -6,7 +6,7 @@ If you discover a security vulnerability in this project, please report it respo
 
 1. **Do NOT open a public GitHub issue**
 2. Use GitHub's private vulnerability reporting feature on this repository
-3. Or email: [your-email@example.com]
+3. Or email: 
 
 I will acknowledge receipt within 48 hours and provide a timeline for a fix.
 
