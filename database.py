@@ -115,6 +115,20 @@ def update_rule(rule_id, **kwargs):
     if not rule:
         conn.close()
         return False
+    # Only allow updates to known, safe columns
+    allowed_fields = {
+        "name",
+        "description",
+        "category",
+        "author",
+        "rule_content",
+        "mitre_techniques",
+        "tags",
+        "severity",
+        "is_active",
+        "date_modified",
+        "version",
+    }
     kwargs["date_modified"] = datetime.now().isoformat()
     if "mitre_techniques" in kwargs and isinstance(kwargs["mitre_techniques"], list):
         kwargs["mitre_techniques"] = json.dumps(kwargs["mitre_techniques"])
@@ -128,8 +142,13 @@ def update_rule(rule_id, **kwargs):
             VALUES (?, ?, ?, ?, ?)
         """, (rule_id, new_version, kwargs["rule_content"],
               kwargs.pop("change_note", "Updated"), kwargs["date_modified"]))
-    set_clause = ", ".join(f"{k} = ?" for k in kwargs)
-    values = list(kwargs.values()) + [rule_id]
+    # Filter to allowed fields to avoid SQL injection via column names
+    sanitized_kwargs = {k: v for k, v in kwargs.items() if k in allowed_fields}
+    if not sanitized_kwargs:
+        conn.close()
+        return True
+    set_clause = ", ".join(f"{k} = ?" for k in sanitized_kwargs)
+    values = list(sanitized_kwargs.values()) + [rule_id]
     conn.execute(f"UPDATE rules SET {set_clause} WHERE id = ?", values)
     conn.commit()
     conn.close()
