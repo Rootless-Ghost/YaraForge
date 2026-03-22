@@ -204,19 +204,19 @@ YaraForge/
 - [ ] Docker containerization for easy deployment
 
 
-
-## License
-
-MIT License — see [LICENSE](LICENSE) for details.
-
 ## Related Tools
 
 | Tool | Purpose | Link |
 |------|---------|------|
-| **YaraForge** | YARA rule generation for malware/file detection | [GitHub](https://github.com/Rootless-Ghost/YaraForge) |
+| **YaraForge** | YARA rule generation for malware/file detection | This Repo |
 | **SnortForge** | Snort IDS/IPS rule generation for network detection | [GitHub](https://github.com/Rootless-Ghost/SnortForge) |
 | **SigmaForge** | Sigma rule generation for SIEM detection | [GitHub](https://github.com/Rootless-Ghost/SigmaForge) |
-| **SIREN** | NIST 800-61 incident response report generator | This Repo |
+| **SIREN** | NIST 800-61 incident response report generator | [GitHub](https://github.com/Rootless-Ghost/SIREN) |
+
+
+## License
+
+MIT License — see [LICENSE](LICENSE) for details.
 
 
 <div align="center">
