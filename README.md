@@ -12,10 +12,6 @@
 ![License](https://img.shields.io/badge/License-MIT-yellow)
 
 A Flask-based platform for building, managing, testing, and visualizing YARA rules — with MITRE ATT&CK mapping and a detection dashboard. Built with Python/Flask.
-
-<p align="center">
-  <a href="#overview">Overview</a> · <a href="#screenshots">Screenshots</a> · <a href="#installation">Installation</a> · <a href="#usage">Usage</a> · <a href="#project-structure">Project Structure</a> · <a href="#related-tools">Related Tools</a>
-</p>
   
 </div>
 
