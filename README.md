@@ -6,15 +6,15 @@
 
 ### YARA Rule Generator & Testing Platform
 
+![Python](https://img.shields.io/badge/Python-3.9+-blue?logo=python)
+![Flask](https://img.shields.io/badge/Flask-3.0-green?logo=flask)
+![YARA](https://img.shields.io/badge/YARA-4.5-orange)
+![License](https://img.shields.io/badge/License-MIT-yellow)
 
 A Flask-based platform for building, managing, testing, and visualizing YARA rules — with MITRE ATT&CK mapping and a detection dashboard. Built with Python/Flask.
 
 
   
-![Python](https://img.shields.io/badge/Python-3.9+-blue?logo=python)
-![Flask](https://img.shields.io/badge/Flask-3.0-green?logo=flask)
-![YARA](https://img.shields.io/badge/YARA-4.5-orange)
-![License](https://img.shields.io/badge/License-MIT-yellow)
 
 </div>
 
