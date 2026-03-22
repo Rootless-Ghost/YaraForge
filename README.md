@@ -18,7 +18,6 @@ A Flask-based platform for building, managing, testing, and visualizing YARA rul
 
 </div>
 
----
 
 ## Dashboard
 
@@ -26,7 +25,6 @@ A Flask-based platform for building, managing, testing, and visualizing YARA rul
 
 Real-time detection overview with rule statistics, MITRE ATT&CK coverage heat map, severity distribution, and recent scan history.
 
----
 
 ## Features
 
@@ -65,7 +63,6 @@ Real-time detection overview with rule statistics, MITRE ATT&CK coverage heat ma
 - Export selected or all rules to a single `.yar` file
 - Duplicate detection during import
 
----
 
 ## Tech Stack
 
@@ -77,7 +74,6 @@ Real-time detection overview with rule statistics, MITRE ATT&CK coverage heat ma
 | Frontend | HTML5, CSS3, Vanilla JS |
 | Charts | Canvas 2D API |
 
----
 
 ## Installation
 
@@ -115,7 +111,6 @@ Open your browser to `http://127.0.0.1:5000`
 > - **Windows:** Install [Visual C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
 > - **Linux:** `sudo apt install build-essential libssl-dev`
 
----
 
 ## Quick Start
 
@@ -124,7 +119,6 @@ Open your browser to `http://127.0.0.1:5000`
 3. **Scan a file** — Upload any file in the Scanner to test against your rules
 4. **Review dashboard** — Check your detection coverage on the Dashboard
 
----
 
 ## Project Structure
 
@@ -151,7 +145,6 @@ YaraForge/
 └── uploads/               # Temporary scan uploads
 ```
 
----
 
 ## API Endpoints
 
@@ -169,7 +162,6 @@ YaraForge/
 | `POST` | `/api/export` | Export rules to .yar file |
 | `GET` | `/api/stats` | Get dashboard statistics |
 
----
 
 ## Sample Rules Included
 
@@ -182,7 +174,6 @@ YaraForge/
 | `detect_pe_file` | Custom | Info | — |
 | `detect_reverse_shell_strings` | Backdoor | High | T1059 |
 
----
 
 ## Security Considerations
 
@@ -192,7 +183,6 @@ YaraForge/
 - No authentication is included — intended for local/lab use
 - **Do not expose to the public internet without adding authentication**
 
----
 
 ## Skills Demonstrated
 
@@ -203,7 +193,6 @@ YaraForge/
 - **Web Application Security** — Input validation, secure file handling, CSRF considerations
 - **Frontend Development** — Responsive dark theme UI, Canvas 2D charts, drag-and-drop
 
----
 
 ## Future Enhancements
 
@@ -214,13 +203,20 @@ YaraForge/
 - [ ] Automated rule testing with CI/CD pipeline
 - [ ] Docker containerization for easy deployment
 
----
+
 
 ## License
 
 MIT License — see [LICENSE](LICENSE) for details.
 
----
+## Related Tools
+
+| Tool | Purpose | Link |
+|------|---------|------|
+| **YaraForge** | YARA rule generation for malware/file detection | [GitHub](https://github.com/Rootless-Ghost/YaraForge) |
+| **SnortForge** | Snort IDS/IPS rule generation for network detection | [GitHub](https://github.com/Rootless-Ghost/SnortForge) |
+| **SigmaForge** | Sigma rule generation for SIEM detection | [GitHub](https://github.com/Rootless-Ghost/SigmaForge) |
+| **SIREN** | NIST 800-61 incident response report generator | This Repo |
 
 
 <div align="center">
