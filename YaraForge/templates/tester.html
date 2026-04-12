@@ -1,0 +1,112 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Scanner</h2>
+    <p>Upload files to scan against your active YARA rules</p>
+</div>
+
+{% if not yara_available %}
+<div class="card mb-4" style="border-color: var(--accent-amber);">
+    <div class="flex items-center gap-4">
+        <span style="font-size:24px;">⚠</span>
+        <div>
+            <strong style="color: var(--accent-amber);">YARA Engine Not Available</strong>
+            <p class="text-sm text-muted mt-4">Install yara-python to enable scanning: <code class="text-mono">pip install yara-python</code></p>
+        </div>
+    </div>
+</div>
+{% endif %}
+
+<div class="grid-2">
+    <div>
+        <!-- Upload Zone -->
+        <div class="card mb-4">
+            <div class="card-header">
+                <span class="card-title">Upload File to Scan</span>
+                <span class="badge badge-green">{{ rules|length }} active rules</span>
+            </div>
+            <div id="upload-zone" class="upload-zone">
+                <div class="upload-zone-icon">⏣</div>
+                <div class="upload-zone-text">
+                    <strong>Click to select</strong> or drag and drop a file<br>
+                    <span class="text-sm">Max 50MB — any file type</span>
+                </div>
+                <input type="file" id="scan-file-input" style="display:none;">
+            </div>
+
+            <div id="scan-loading" class="hidden" style="text-align:center; padding:20px;">
+                <div class="spinner"></div>
+                <p class="text-muted mt-4">Scanning file against {{ rules|length }} rules...</p>
+            </div>
+        </div>
+
+        <!-- Scan Results -->
+        <div id="scan-results"></div>
+    </div>
+
+    <!-- Active Rules Sidebar -->
+    <div>
+        <div class="card">
+            <div class="card-header">
+                <span class="card-title">Active Rules</span>
+            </div>
+            {% if rules %}
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr><th>Rule</th><th>Category</th><th>Severity</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for rule in rules %}
+                        <tr>
+                            <td class="text-mono" style="font-size:12px;">{{ rule.name }}</td>
+                            <td><span class="badge badge-muted" style="font-size:10px;">{{ rule.category }}</span></td>
+                            <td>
+                                {% set sev_colors = {'critical':'red','high':'amber','medium':'blue','low':'green','info':'muted'} %}
+                                <span class="badge badge-{{ sev_colors.get(rule.severity, 'muted') }}" style="font-size:10px;">{{ rule.severity }}</span>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            {% else %}
+            <div class="empty-state">
+                <p>No active rules. Create rules in the Rule Builder first.</p>
+            </div>
+            {% endif %}
+        </div>
+
+        {% if recent_scans %}
+        <div class="card mt-4">
+            <div class="card-header">
+                <span class="card-title">Recent Scans</span>
+            </div>
+            <div class="table-container">
+                <table>
+                    <thead>
+                        <tr><th>File</th><th>Matches</th><th>Time</th></tr>
+                    </thead>
+                    <tbody>
+                        {% for scan in recent_scans[:10] %}
+                        <tr>
+                            <td class="text-mono" style="font-size:11px;">{{ scan.filename[:25] }}</td>
+                            <td>
+                                {% if scan.matches_found > 0 %}
+                                <span class="badge badge-red" style="font-size:10px;">{{ scan.matches_found }}</span>
+                                {% else %}
+                                <span class="badge badge-green" style="font-size:10px;">Clean</span>
+                                {% endif %}
+                            </td>
+                            <td class="text-mono text-sm">{{ scan.scan_duration_ms }}ms</td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

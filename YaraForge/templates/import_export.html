@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Import / Export</h2>
+    <p>Import .yar files or export your rules for use in SIEM and EDR tools</p>
+</div>
+
+<div class="grid-2">
+    <!-- Import -->
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Import Rules</span>
+        </div>
+        <div id="import-zone" class="upload-zone">
+            <div class="upload-zone-icon">⇄</div>
+            <div class="upload-zone-text">
+                <strong>Click to select</strong> or drag and drop a .yar file<br>
+                <span class="text-sm">YARA rule files (.yar, .yara, .txt)</span>
+            </div>
+            <input type="file" id="import-file-input" accept=".yar,.yara,.txt" style="display:none;">
+        </div>
+        <div class="text-sm text-muted mt-4">
+            Imported rules will be validated and added to your library. Duplicates are automatically skipped.
+        </div>
+    </div>
+
+    <!-- Export -->
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Export Rules</span>
+        </div>
+        {% if rules %}
+        <p class="text-sm text-muted mb-4">Select rules to export or export all {{ rules|length }} rules.</p>
+
+        <div style="max-height: 300px; overflow-y: auto; margin-bottom: 16px;">
+            {% for rule in rules %}
+            <label class="multi-select-item">
+                <input type="checkbox" class="export-checkbox" value="{{ rule.id }}" checked>
+                <span class="text-mono" style="font-size:12px;">{{ rule.name }}</span>
+                <span class="badge badge-muted" style="font-size:10px; margin-left:auto;">{{ rule.category }}</span>
+            </label>
+            {% endfor %}
+        </div>
+
+        <div class="btn-group">
+            <button class="btn btn-primary" onclick="exportSelected()">Export Selected</button>
+            <button class="btn btn-secondary" onclick="exportRules([])">Export All</button>
+        </div>
+        {% else %}
+        <div class="empty-state">
+            <p>No rules to export. Create some rules first!</p>
+        </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

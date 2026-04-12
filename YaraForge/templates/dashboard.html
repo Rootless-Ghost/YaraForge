@@ -1,0 +1,137 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="page-header">
+    <h2>Dashboard</h2>
+    <p>YaraForge detection overview and rule coverage metrics</p>
+</div>
+
+<!-- Stats Cards -->
+<div class="stats-grid">
+    <div class="stat-card green">
+        <div class="stat-label">Total Rules</div>
+        <div class="stat-value">{{ stats.total_rules }}</div>
+        <div class="stat-sub">{{ stats.active_rules }} active</div>
+    </div>
+    <div class="stat-card blue">
+        <div class="stat-label">Total Scans</div>
+        <div class="stat-value">{{ stats.total_scans }}</div>
+    </div>
+    <div class="stat-card amber">
+        <div class="stat-label">Total Matches</div>
+        <div class="stat-value">{{ stats.total_matches }}</div>
+    </div>
+    <div class="stat-card purple">
+        <div class="stat-label">MITRE Coverage</div>
+        <div class="stat-value">{{ stats.mitre_coverage|length }}</div>
+        <div class="stat-sub">techniques mapped</div>
+    </div>
+</div>
+
+<!-- Charts Row -->
+<div class="grid-2 mb-6">
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Rules by Category</span>
+        </div>
+        <canvas id="category-chart"></canvas>
+    </div>
+    <div class="card">
+        <div class="card-header">
+            <span class="card-title">Severity Distribution</span>
+        </div>
+        <canvas id="severity-chart"></canvas>
+    </div>
+</div>
+
+<!-- MITRE ATT&CK Coverage -->
+<div class="card mb-6">
+    <div class="card-header">
+        <span class="card-title">MITRE ATT&CK Coverage Map</span>
+        <span class="badge badge-blue">{{ stats.mitre_coverage|length }} techniques</span>
+    </div>
+    {% set mitre_ref = {
+        'T1059': ('Command and Scripting Interpreter', 'Execution'),
+        'T1059.001': ('PowerShell', 'Execution'),
+        'T1059.003': ('Windows Command Shell', 'Execution'),
+        'T1071': ('Application Layer Protocol', 'C2'),
+        'T1071.001': ('Web Protocols', 'C2'),
+        'T1105': ('Ingress Tool Transfer', 'C2'),
+        'T1027': ('Obfuscated Files', 'Defense Evasion'),
+        'T1036': ('Masquerading', 'Defense Evasion'),
+        'T1055': ('Process Injection', 'Defense Evasion'),
+        'T1486': ('Data Encrypted for Impact', 'Impact'),
+        'T1490': ('Inhibit System Recovery', 'Impact'),
+        'T1547': ('Boot Autostart Execution', 'Persistence'),
+        'T1566': ('Phishing', 'Initial Access'),
+        'T1566.001': ('Spearphishing Attachment', 'Initial Access'),
+        'T1078': ('Valid Accounts', 'Initial Access'),
+        'T1110': ('Brute Force', 'Credential Access'),
+        'T1003': ('OS Credential Dumping', 'Credential Access'),
+        'T1021': ('Remote Services', 'Lateral Movement'),
+        'T1046': ('Network Service Discovery', 'Discovery'),
+        'T1082': ('System Info Discovery', 'Discovery'),
+        'T1041': ('Exfil Over C2 Channel', 'Exfiltration'),
+        'T1204': ('User Execution', 'Execution'),
+        'T1562': ('Impair Defenses', 'Defense Evasion'),
+        'T1497': ('Sandbox Evasion', 'Defense Evasion')
+    } %}
+    <div class="mitre-grid">
+        {% for tech_id, info in mitre_ref.items() %}
+        <div class="mitre-cell {% if tech_id in stats.mitre_coverage %}covered{% endif %}">
+            <div class="technique-id">{{ tech_id }}</div>
+            <div class="technique-name">{{ info[0] }}</div>
+            {% if tech_id in stats.mitre_coverage %}
+            <div class="technique-count">{{ stats.mitre_coverage[tech_id] }} rule{{ 's' if stats.mitre_coverage[tech_id] != 1 }}</div>
+            {% endif %}
+        </div>
+        {% endfor %}
+    </div>
+</div>
+
+<!-- Recent Scans -->
+<div class="card">
+    <div class="card-header">
+        <span class="card-title">Recent Scans</span>
+    </div>
+    {% if stats.recent_scans %}
+    <div class="table-container">
+        <table>
+            <thead>
+                <tr><th>File</th><th>Date</th><th>Rules</th><th>Matches</th><th>Duration</th></tr>
+            </thead>
+            <tbody>
+                {% for scan in stats.recent_scans %}
+                <tr>
+                    <td class="text-mono">{{ scan.filename }}</td>
+                    <td>{{ scan.scan_date[:16] }}</td>
+                    <td>{{ scan.total_rules_scanned }}</td>
+                    <td>
+                        {% if scan.matches_found > 0 %}
+                        <span class="badge badge-red">{{ scan.matches_found }} match{{ 'es' if scan.matches_found != 1 }}</span>
+                        {% else %}
+                        <span class="badge badge-green">Clean</span>
+                        {% endif %}
+                    </td>
+                    <td class="text-mono">{{ scan.scan_duration_ms }}ms</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% else %}
+    <div class="empty-state">
+        <div class="empty-state-icon">⏣</div>
+        <h3>No scans yet</h3>
+        <p>Head to the Scanner to test files against your YARA rules.</p>
+    </div>
+    {% endif %}
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+    const stats = {{ stats|tojson }};
+    initDashboardCharts(stats);
+</script>
+{% endblock %}
