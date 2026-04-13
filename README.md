@@ -104,7 +104,7 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Open your browser to `http://127.0.0.1:5000`
+Open your browser to `http://127.0.0.1:5002`
 
 > **Note:** If `yara-python` fails to install, you may need C compilation tools:
 > - **Windows:** Install [Visual C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
@@ -201,6 +201,17 @@ YaraForge/
 - [ ] Rule sharing / community repository
 - [ ] Automated rule testing with CI/CD pipeline
 - [ ] Docker containerization for easy deployment
+
+
+## Integration with Nebula Forge
+
+YaraForge occupies the **Detect** phase of the Nebula Forge pipeline as the file-based signature engine.
+
+### detection-pipeline → YaraForge (IOC-to-rule fan-out)
+
+detection-pipeline automates the path from threat intelligence to deployed rules. When an IOC reaches a configured risk threshold — after enrichment via the Threat Intel Dashboard against VirusTotal and AbuseIPDB — detection-pipeline fans out simultaneously to SigmaForge, YaraForge, and SnortForge. For YaraForge, it calls `POST /api/generate` with pattern data derived from the IOC, producing a YARA rule that can immediately be used to scan files via `POST /api/scan`.
+
+A single IOC enrichment run can produce — without manual intervention — a YARA rule in YaraForge, a Sigma rule in SigmaForge, and a Snort rule in SnortForge in one pass.
 
 
 ## Related Tools
