@@ -8,6 +8,8 @@ venv/
 *.db-shm
 uploads/*
 !uploads/.gitkeep
+output/
+!output/.gitkeep
 instance/
 .vscode/
 .idea/
