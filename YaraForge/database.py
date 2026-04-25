@@ -116,28 +116,33 @@ def update_rule(rule_id, **kwargs):
         conn.close()
         return False
 
-    allowed_update_fields = {
+    updatable_columns = (
         "name", "description", "category", "author", "rule_content",
         "mitre_techniques", "tags", "severity", "is_active", "change_note"
-    }
-    kwargs = {k: v for k, v in kwargs.items() if k in allowed_update_fields}
+    )
+    filtered_kwargs = {column: kwargs[column] for column in updatable_columns if column in kwargs}
 
-    kwargs["date_modified"] = datetime.now().isoformat()
-    if "mitre_techniques" in kwargs and isinstance(kwargs["mitre_techniques"], list):
-        kwargs["mitre_techniques"] = json.dumps(kwargs["mitre_techniques"])
-    if "tags" in kwargs and isinstance(kwargs["tags"], list):
-        kwargs["tags"] = json.dumps(kwargs["tags"])
-    if "rule_content" in kwargs and kwargs["rule_content"] != rule["rule_content"]:
+    filtered_kwargs["date_modified"] = datetime.now().isoformat()
+    if "mitre_techniques" in filtered_kwargs and isinstance(filtered_kwargs["mitre_techniques"], list):
+        filtered_kwargs["mitre_techniques"] = json.dumps(filtered_kwargs["mitre_techniques"])
+    if "tags" in filtered_kwargs and isinstance(filtered_kwargs["tags"], list):
+        filtered_kwargs["tags"] = json.dumps(filtered_kwargs["tags"])
+    if "rule_content" in filtered_kwargs and filtered_kwargs["rule_content"] != rule["rule_content"]:
         new_version = rule["version"] + 1
-        kwargs["version"] = new_version
+        filtered_kwargs["version"] = new_version
         conn.execute("""
             INSERT INTO rule_versions (rule_id, version, rule_content, change_note, date_created)
             VALUES (?, ?, ?, ?, ?)
-        """, (rule_id, new_version, kwargs["rule_content"],
-              kwargs.pop("change_note", "Updated"), kwargs["date_modified"]))
+        """, (rule_id, new_version, filtered_kwargs["rule_content"],
+              filtered_kwargs.pop("change_note", "Updated"), filtered_kwargs["date_modified"]))
 
-    set_clause = ", ".join(f"{k} = ?" for k in kwargs)
-    values = list(kwargs.values()) + [rule_id]
+    if len(filtered_kwargs) == 1 and "date_modified" in filtered_kwargs:
+        conn.close()
+        return True
+
+    update_columns = [column for column in filtered_kwargs.keys() if column != "change_note"]
+    set_clause = ", ".join(f"{column} = ?" for column in update_columns)
+    values = [filtered_kwargs[column] for column in update_columns] + [rule_id]
     conn.execute(f"UPDATE rules SET {set_clause} WHERE id = ?", values)
     conn.commit()
     conn.close()
