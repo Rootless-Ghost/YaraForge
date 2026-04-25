@@ -42,15 +42,15 @@ def compile_rules_from_db(rules):
         try:
             yara.compile(source=rule["rule_content"])
             sources[f"rule_{rule['id']}"] = rule["rule_content"]
-        except Exception as e:
-            errors.append(f"Rule '{rule['name']}' (ID: {rule['id']}): {str(e)}")
+        except Exception:
+            errors.append(f"Rule '{rule['name']}' (ID: {rule['id']}): validation failed")
     if not sources:
         return None, errors or ["No valid rules to compile"]
     try:
         compiled = yara.compile(sources=sources)
         return compiled, errors
-    except Exception as e:
-        return None, errors + [f"Compilation error: {str(e)}"]
+    except Exception:
+        return None, errors + ["Compilation error: failed to compile active rules"]
 
 
 def scan_file(file_path, rules):
@@ -120,8 +120,8 @@ def scan_file(file_path, rules):
         }
     except yara.TimeoutError:
         return {"success": False, "error": "Scan timed out (30s limit)", "matches": [], "duration_ms": 30000}
-    except Exception as e:
-        return {"success": False, "error": str(e), "matches": [], "duration_ms": (time.time() - start_time) * 1000}
+    except Exception:
+        return {"success": False, "error": "Internal scanning error", "matches": [], "duration_ms": (time.time() - start_time) * 1000}
 
 
 def generate_rule_template(rule_name, description="", author="YaraForge User",
