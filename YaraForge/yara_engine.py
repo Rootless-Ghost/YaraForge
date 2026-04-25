@@ -25,12 +25,12 @@ def validate_rule(rule_content):
     try:
         yara.compile(source=rule_content)
         return True, None
-    except yara.SyntaxError as e:
-        return False, f"Syntax Error: {str(e)}"
-    except yara.Error as e:
-        return False, f"YARA Error: {str(e)}"
-    except Exception as e:
-        return False, f"Unexpected Error: {str(e)}"
+    except yara.SyntaxError:
+        return False, "Syntax error in YARA rule"
+    except yara.Error:
+        return False, "YARA validation failed"
+    except Exception:
+        return False, "Internal validation error"
 
 
 def compile_rules_from_db(rules):

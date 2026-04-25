@@ -86,7 +86,7 @@ def api_create_rule():
         return jsonify({"error": "Name and rule content are required"}), 400
     is_valid, error = validate_rule(rule_content)
     if not is_valid:
-        return jsonify({"error": f"Invalid YARA rule: {error}"}), 400
+        return jsonify({"error": "Invalid YARA rule"}), 400
     rule_id = create_rule(
         name=name, description=data.get("description", ""),
         category=data.get("category", "uncategorized"),
