@@ -140,7 +140,11 @@ def update_rule(rule_id, **kwargs):
         conn.close()
         return True
 
-    update_columns = [column for column in filtered_kwargs.keys() if column != "change_note"]
+    allowed_update_columns = (
+        "name", "description", "category", "author", "rule_content",
+        "mitre_techniques", "tags", "severity", "is_active", "version", "date_modified"
+    )
+    update_columns = [column for column in allowed_update_columns if column in filtered_kwargs]
     set_clause = ", ".join(f"{column} = ?" for column in update_columns)
     values = [filtered_kwargs[column] for column in update_columns] + [rule_id]
     conn.execute(f"UPDATE rules SET {set_clause} WHERE id = ?", values)
