@@ -253,4 +253,5 @@ if __name__ == "__main__":
     ║  Dashboard:   http://127.0.0.1:5002           ║
     ╚═══════════════════════════════════════════════╝
     """)
-    app.run(debug=True, host="127.0.0.1", port=5002)
+    debug_mode = os.getenv("FLASK_DEBUG", "0").lower() in ("1", "true", "yes", "on")
+    app.run(debug=debug_mode, host="127.0.0.1", port=5002)
