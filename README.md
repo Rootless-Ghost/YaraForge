@@ -104,11 +104,20 @@ pip install -r requirements.txt
 python app.py
 ```
 
-Open your browser to `http://127.0.0.1:5002`
+Open your browser to `http://localhost:5001`
 
 > **Note:** If `yara-python` fails to install, you may need C compilation tools:
 > - **Windows:** Install [Visual C++ Build Tools](https://visualstudio.microsoft.com/visual-cpp-build-tools/)
 > - **Linux:** `sudo apt install build-essential libssl-dev`
+
+### Docker (standalone)
+
+```bash
+docker build -t yaraforge .
+docker run -p 5001:5001 yaraforge
+```
+
+Open http://localhost:5001
 
 
 ## Quick Start
