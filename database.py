@@ -8,7 +8,8 @@ import os
 import json
 from datetime import datetime
 
-DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "yaraforge.db")
+DB_PATH = os.path.join(os.path.dirname(os.path.abspath(__file__)), "data", "yaraforge.db")
+os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
 
 
 def get_db():
