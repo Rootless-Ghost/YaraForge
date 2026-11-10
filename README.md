@@ -17,6 +17,8 @@ A Flask-based platform for building, managing, testing, and visualizing YARA rul
   
 </div>
 
+> **Lab-grade tooling.** Built and tested in a home detection-engineering lab. Works as documented, but isn't hardened for production or multi-user deployment. See SECURITY.md for scope.
+
 
 ## Dashboard
 
